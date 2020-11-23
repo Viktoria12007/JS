@@ -1,3 +1,5 @@
+"use strict";
+
 let roadMines = [false, false, false, true, false, false, false, false, false, false];
 let position = 0;
 let mines = [];

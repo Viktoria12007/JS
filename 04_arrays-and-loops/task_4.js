@@ -1,6 +1,12 @@
+"use strict";
+
 let number_of_month = [];
 let day_of_week = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
-let first_day = 'Четверг';
+let first_day = 'Суббота';
+let i;
+let first_day_i;
+let day_of_week_reverse;
+
 for (i = 1; i <= 31; ++i) {
     number_of_month.push(i);
 }
