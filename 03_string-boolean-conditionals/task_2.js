@@ -1,3 +1,5 @@
+"use strict";
+
 let name = 'Виктория';
 let surname = 'Голубова';
 
