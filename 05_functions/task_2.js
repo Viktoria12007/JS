@@ -3,7 +3,7 @@
 let totalAmountBasket = 120000;
 let amountGoods = ['Смартфон', 'Холодильник', 'Телевизор', 'Стиральная машина', 'Посудомоечная машина', 'Пылесос', 'Фен', 'Утюг', 'Кофемашина', 'Блендер'];
 
-function amountBasketAfterAllDiscount(totalAmountBasket, amountGoods, promoCode = null) {
+export default function amountBasketAfterAllDiscount(totalAmountBasket, amountGoods, promoCode = null) {
     
     if (promoCode === 'ДАРИМЗОО' && totalAmountBasket >= 300) {
         totalAmountBasket -= 300;
@@ -29,9 +29,7 @@ function amountBasketAfterAllDiscount(totalAmountBasket, amountGoods, promoCode 
 
 console.log(amountBasketAfterAllDiscount(totalAmountBasket, amountGoods, 'СКИДКА15'));
 
-export default function amountBasketAfterAllDiscount() {
-    
-}
+
 
 
 
