@@ -27,14 +27,10 @@ function createTodoItemForm() {
         form,
         input,
         button
-    };
+    }
 }
 
-let startList = [{name: 'построить дом', done: true}, 
-                     {name: 'вырастить сына', done: true}, 
-                     {name: 'посадить дерево', done: 'false'}];
-
-function createTodoItem(name) {
+function createTodoItem(name, done, key) {
     let item = document.createElement('li');
     let containerItem = document.createElement('div');
     let buttonDone = document.createElement('button');
@@ -43,13 +39,46 @@ function createTodoItem(name) {
 
     item.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
     item.textContent = name;
-    item.setAttribute('done', 'false');
+    item.setAttribute('done', String(done));
     containerItem.classList.add('btn-group', 'btn-group-sm');
     buttonDone.classList.add('btn', 'btn-success');
     buttonDone.textContent = 'Готово';
     buttonDelete.classList.add('btn', 'btn-danger');
     buttonDelete.textContent = 'Удалить';
+    let currentItem = JSON.parse(localStorage.getItem(key));
+    
+    buttonDone.addEventListener('click', function() {
+        item.classList.toggle('list-group-item-success');
+        if (item.getAttribute('done') === 'false') {
+            item.setAttribute('done','true');
+            for (let i of currentItem) {
+            if(i.name === item.textContent) {
+               // i.setAttribute('done', 'true');
+               i.done = 'true';
+               //console.log(i);
+                localStorage.setItem(key, JSON.stringify(currentItem));
+            }
+        }
+   } 
+        
+        else if (item.getAttribute('done') === 'true') {
+            item.setAttribute('done', 'false');
+            for (let i of currentItem) {
+                if(i.name === item.textContent) {
+                    i.done = 'false';
+                    localStorage.setItem(key, JSON.stringify(currentItem));
+                }
+            }   
+        }
+})
 
+    buttonDelete.addEventListener('click', function() {
+        if (confirm('Вы уверены?')) {
+        item.remove();
+        localStorage.removeItem(key);
+        }
+    });
+    
 
     containerItem.append(buttonDone);
     containerItem.append(buttonDelete);
@@ -68,17 +97,45 @@ function createTodoList() {
     return list;
 }
 
+ let startList1 = [{name: 'построить дом', done: true}, 
+ {name: 'вырастить сына', done: true}, 
+ {name: 'посадить дерево', done: false}]; 
 
-function createTodoApp(container, title) {
+ let startList2 = [{name: 'построить', done: true}, 
+                   {name: 'вырастить', done: true}, 
+                   {name: 'посадить', done: false}, 
+                   {name: 'построить', done: true}, 
+                   {name: 'вырастить', done: true}, 
+                   {name: 'посадить', done: false}];
+
+function createTodoApp(container, title, key, startList = false) {
 
     let todoAppTitle = createAppTitle(title);
     let todoItemForm = createTodoItemForm();
     let todoList = createTodoList();
+    let todoStartList = createTodoStartList(startList);
+    let itemsArray = localStorage.getItem(key) ? JSON.parse(localStorage.getItem(key)) : [];
 
+    localStorage.setItem(key, JSON.stringify(itemsArray));
+    const data = JSON.parse(localStorage.getItem(key));
+
+    function createTodoStartList(startList)  {                
+
+        for (let i = 0; i < startList.length; i++) {
     
+            let todoStartItem = createTodoItem(Object.values(startList[i])[0], Object.values(startList[i])[1]);
+                if (todoStartItem.item.getAttribute('done') === 'true') {
+                    todoStartItem.item.classList.add('list-group-item-success');
+                }
+          todoList.append(todoStartItem.item);
+           }
+           return todoList;
+        }
+
     container.append(todoAppTitle);
     container.append(todoItemForm.form);
     container.append(todoList);
+    container.append(todoStartList);
 
     todoItemForm.input.addEventListener('input', function() {
         
@@ -99,28 +156,36 @@ function createTodoApp(container, title) {
             return;
         }
     
-        let todoItem = createTodoItem(todoItemForm.input.value);
+        let todoItem = createTodoItem(todoItemForm.input.value, false, key);
+       
 
+        let object = {};
+        object.name = todoItemForm.input.value;
+        object.done = (todoItem.item.getAttribute('done')); 
+        console.log(object);
 
-        todoItem.buttonDone.addEventListener('click', function() {
-            todoItem.item.classList.toggle('list-group-item-success');
-            todoItem.item.setAttribute('done', 'true');
+        itemsArray.push(object);
+        for (let i in itemsArray) {
+            object.id = parseInt(i);
+            todoItem.item.id = parseInt(i);
             
-        });
+        } 
+       
+        console.log(itemsArray);
+        localStorage.setItem(key, JSON.stringify(itemsArray));
 
-        todoItem.buttonDelete.addEventListener('click', function() {
-            if (confirm('Вы уверены?')) {
-            todoItem.item.remove();
-            }
-        })
+        
 
-       todoList.append(todoItem.item);
+        todoList.append(todoItem.item);
     
         todoItemForm.input.value = ''; 
 
         todoItemForm.button.disabled = true;
+
     });
-}
+        data.forEach(item => {
+         let todoNewItem = createTodoItem(item.name, item.done, key);
+         todoList.append(todoNewItem.item);
+        })
 
-
-
+    }
