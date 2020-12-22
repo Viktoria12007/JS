@@ -45,39 +45,46 @@ function createTodoItem(name, done, key) {
     buttonDone.textContent = 'Готово';
     buttonDelete.classList.add('btn', 'btn-danger');
     buttonDelete.textContent = 'Удалить';
-    let currentItem = JSON.parse(localStorage.getItem(key));
+    
     
     buttonDone.addEventListener('click', function() {
-        item.classList.toggle('list-group-item-success');
+       item.classList.toggle('list-group-item-success');
+       let currentItem = JSON.parse(localStorage.getItem(key));
         if (item.getAttribute('done') === 'false') {
-            item.setAttribute('done','true');
-            for (let i of currentItem) {
-            if(i.name === item.textContent) {
-               // i.setAttribute('done', 'true');
+            item.setAttribute('done', 'true');
+            for (let i of Object.values(currentItem)) {
+           if(i.id === parseInt(item.id)) {
                i.done = 'true';
-               //console.log(i);
-                localStorage.setItem(key, JSON.stringify(currentItem));
             }
         }
-   } 
+} 
         
         else if (item.getAttribute('done') === 'true') {
             item.setAttribute('done', 'false');
-            for (let i of currentItem) {
-                if(i.name === item.textContent) {
+            for (let i of Object.values(currentItem)) {
+                if(i.id === parseInt(item.id)) {
                     i.done = 'false';
-                    localStorage.setItem(key, JSON.stringify(currentItem));
                 }
             }   
         }
+        localStorage.setItem(key, JSON.stringify(currentItem));
 })
 
     buttonDelete.addEventListener('click', function() {
+
+        //let currentItem = JSON.parse(localStorage.getItem(key));
         if (confirm('Вы уверены?')) {
         item.remove();
+        //for (let i of Object.values(currentItem)) {
+          //  if (i.id === parseInt(item.id)) {
+          //      currentItem.splice(i, 1);
         localStorage.removeItem(key);
-        }
-    });
+        //console.log(currentItem);
+       // }
+    }
+
+      // localStorage.setItem(key, JSON.stringify(currentItem));
+   });
     
 
     containerItem.append(buttonDone);
@@ -157,8 +164,8 @@ function createTodoApp(container, title, key, startList = false) {
         }
     
         let todoItem = createTodoItem(todoItemForm.input.value, false, key);
-       
 
+        
         let object = {};
         object.name = todoItemForm.input.value;
         object.done = (todoItem.item.getAttribute('done')); 
@@ -174,8 +181,6 @@ function createTodoApp(container, title, key, startList = false) {
         console.log(itemsArray);
         localStorage.setItem(key, JSON.stringify(itemsArray));
 
-        
-
         todoList.append(todoItem.item);
     
         todoItemForm.input.value = ''; 
@@ -185,7 +190,11 @@ function createTodoApp(container, title, key, startList = false) {
     });
         data.forEach(item => {
          let todoNewItem = createTodoItem(item.name, item.done, key);
+         if (todoNewItem.item.getAttribute('done') === 'true') {
+            todoNewItem.item.classList.add('list-group-item-success');
+        }
+        
          todoList.append(todoNewItem.item);
         })
-
+        window.createTodoApp = createTodoApp;
     }
