@@ -30,7 +30,7 @@ function createTodoItemForm() {
     }
 }
 
-function createTodoItem(name, done, key) {
+function createTodoItem(name, done, id, key) {
     let item = document.createElement('li');
     let containerItem = document.createElement('div');
     let buttonDone = document.createElement('button');
@@ -40,6 +40,7 @@ function createTodoItem(name, done, key) {
     item.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
     item.textContent = name;
     item.setAttribute('done', String(done));
+    item.setAttribute('id', String(id));
     containerItem.classList.add('btn-group', 'btn-group-sm');
     buttonDone.classList.add('btn', 'btn-success');
     buttonDone.textContent = 'Готово';
@@ -52,8 +53,8 @@ function createTodoItem(name, done, key) {
        let currentItem = JSON.parse(localStorage.getItem(key));
         if (item.getAttribute('done') === 'false') {
             item.setAttribute('done', 'true');
-            for (let i of Object.values(currentItem)) {
-           if(i.id === parseInt(item.id)) {
+            for (let i of currentItem) {
+           if(i.id === item.id) {
                i.done = 'true';
             }
         }
@@ -61,8 +62,8 @@ function createTodoItem(name, done, key) {
         
         else if (item.getAttribute('done') === 'true') {
             item.setAttribute('done', 'false');
-            for (let i of Object.values(currentItem)) {
-                if(i.id === parseInt(item.id)) {
+            for (let i of currentItem) {
+                if(i.id === item.id) {
                     i.done = 'false';
                 }
             }   
@@ -72,18 +73,65 @@ function createTodoItem(name, done, key) {
 
     buttonDelete.addEventListener('click', function() {
 
-        //let currentItem = JSON.parse(localStorage.getItem(key));
+        let currentItem = JSON.parse(localStorage.getItem(key));
         if (confirm('Вы уверены?')) {
         item.remove();
-        //for (let i of Object.values(currentItem)) {
-          //  if (i.id === parseInt(item.id)) {
-          //      currentItem.splice(i, 1);
-        localStorage.removeItem(key);
-        //console.log(currentItem);
-       // }
-    }
+        for (let i of currentItem) {
+            if (i.id === (item.id)) {
+         currentItem.splice(currentItem.indexOf(i), 1);
+         console.log(currentItem);
+            }
+      for(let i of currentItem) {
+          i.id = String(currentItem.indexOf(i));
+          console.log(i);
+          console.log(currentItem);
+          //createTodoItem(i.name, i.done, i.id, key);
+      }
+              
 
-      // localStorage.setItem(key, JSON.stringify(currentItem));
+              //for (let i = 0; i < currentItem.length; i++) {
+    
+                //let todoStartItem = createTodoItem(Object.values(currentItem[i])[0], Object.values(currentItem[i])[1], todoList.children.length);
+                  //  if (todoStartItem.item.getAttribute('done') === 'true') {
+                    //    todoStartItem.item.classList.add('list-group-item-success');
+                   // }
+             // todoList.append(todoStartItem.item);
+               //}
+              // return todoList;
+            //}
+            //let currentList = document.querySelector('ul');
+             //let currentListItems = document.querySelectorAll('li');
+             //for(let i=0; i < currentList.children.length; i++) {
+               // currentListItems.setAttribute('id', String(i));
+            // }
+           //  currentListItems.setAttribute('id', currentListItems.children.length);
+             //let currentListItems = currentList.children;
+
+
+
+             //console.log(currentListItems);
+             //let currentArray = Array.prototype.slice.call(currentListItems);
+             
+            //currentArray.forEach(function(elem) {
+           //     elem.id = String(currentArray.indexOf(elem)); 
+             // });
+             // console.log(currentArray);
+
+             //for(let i of currentList) {
+              //   console.log(i);
+             //}
+             //for(let i=0; i < currentList.children.length; i++) {
+              //   console.log(currentList.children[i]);
+            // }
+             //console.log(currentList);
+             //currentList.forEach(item => {
+              //  item.id = currentList.children.length;
+             //});
+              localStorage.setItem(key, JSON.stringify(currentItem));  
+         }
+        } 
+    
+    
    });
     
 
@@ -130,7 +178,7 @@ function createTodoApp(container, title, key, startList = false) {
 
         for (let i = 0; i < startList.length; i++) {
     
-            let todoStartItem = createTodoItem(Object.values(startList[i])[0], Object.values(startList[i])[1]);
+            let todoStartItem = createTodoItem(Object.values(startList[i])[0], Object.values(startList[i])[1], todoList.children.length);
                 if (todoStartItem.item.getAttribute('done') === 'true') {
                     todoStartItem.item.classList.add('list-group-item-success');
                 }
@@ -163,20 +211,15 @@ function createTodoApp(container, title, key, startList = false) {
             return;
         }
     
-        let todoItem = createTodoItem(todoItemForm.input.value, false, key);
-
-        
+        let todoItem = createTodoItem(todoItemForm.input.value, false, todoList.children.length, key);
+       
         let object = {};
         object.name = todoItemForm.input.value;
-        object.done = (todoItem.item.getAttribute('done')); 
+        object.done = todoItem.item.getAttribute('done'); 
+        object.id = todoItem.item.getAttribute('id');
         console.log(object);
 
         itemsArray.push(object);
-        for (let i in itemsArray) {
-            object.id = parseInt(i);
-            todoItem.item.id = parseInt(i);
-            
-        } 
        
         console.log(itemsArray);
         localStorage.setItem(key, JSON.stringify(itemsArray));
@@ -189,7 +232,7 @@ function createTodoApp(container, title, key, startList = false) {
 
     });
         data.forEach(item => {
-         let todoNewItem = createTodoItem(item.name, item.done, key);
+         let todoNewItem = createTodoItem(item.name, item.done, todoList.children.length, key);
          if (todoNewItem.item.getAttribute('done') === 'true') {
             todoNewItem.item.classList.add('list-group-item-success');
         }
