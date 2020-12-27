@@ -83,50 +83,7 @@ function createTodoItem(name, done, id, key) {
             }
       for(let i of currentItem) {
           i.id = String(currentItem.indexOf(i));
-          console.log(i);
-          console.log(currentItem);
-          //createTodoItem(i.name, i.done, i.id, key);
       }
-              
-
-              //for (let i = 0; i < currentItem.length; i++) {
-    
-                //let todoStartItem = createTodoItem(Object.values(currentItem[i])[0], Object.values(currentItem[i])[1], todoList.children.length);
-                  //  if (todoStartItem.item.getAttribute('done') === 'true') {
-                    //    todoStartItem.item.classList.add('list-group-item-success');
-                   // }
-             // todoList.append(todoStartItem.item);
-               //}
-              // return todoList;
-            //}
-            //let currentList = document.querySelector('ul');
-             //let currentListItems = document.querySelectorAll('li');
-             //for(let i=0; i < currentList.children.length; i++) {
-               // currentListItems.setAttribute('id', String(i));
-            // }
-           //  currentListItems.setAttribute('id', currentListItems.children.length);
-             //let currentListItems = currentList.children;
-
-
-
-             //console.log(currentListItems);
-             //let currentArray = Array.prototype.slice.call(currentListItems);
-             
-            //currentArray.forEach(function(elem) {
-           //     elem.id = String(currentArray.indexOf(elem)); 
-             // });
-             // console.log(currentArray);
-
-             //for(let i of currentList) {
-              //   console.log(i);
-             //}
-             //for(let i=0; i < currentList.children.length; i++) {
-              //   console.log(currentList.children[i]);
-            // }
-             //console.log(currentList);
-             //currentList.forEach(item => {
-              //  item.id = currentList.children.length;
-             //});
               localStorage.setItem(key, JSON.stringify(currentItem));  
          }
         } 
