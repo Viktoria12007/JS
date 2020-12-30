@@ -46,16 +46,16 @@ function createTodoItem(name, done, id, key) {
     buttonDone.textContent = 'Готово';
     buttonDelete.classList.add('btn', 'btn-danger');
     buttonDelete.textContent = 'Удалить';
-    //let data = getMemory(key);
+    let data = getMemory(key);
     
     
     buttonDone.addEventListener('click', function() {
        item.classList.toggle('list-group-item-success');
-       let currentItem = JSON.parse(localStorage.getItem(key));
+       //let currentItem = JSON.parse(localStorage.getItem(key));
      
         if (item.getAttribute('done') === 'false') {
             item.setAttribute('done', 'true');
-            for (let i of currentItem) {
+            for (let i of data) {
            if(i.id === item.id) {
                i.done = 'true';
             }
@@ -64,28 +64,28 @@ function createTodoItem(name, done, id, key) {
         
         else if (item.getAttribute('done') === 'true') {
             item.setAttribute('done', 'false');
-            for (let i of currentItem) {
+            for (let i of data) {
                 if(i.id === item.id) {
                     i.done = 'false';
                 }
             }   
         }
-        localStorage.setItem(key, JSON.stringify(currentItem));
+        localStorage.setItem(key, JSON.stringify(data));
 })
 
     buttonDelete.addEventListener('click', function() {
 
         let currentItemId = item.getAttribute('id');
-        let storageList = JSON.parse(localStorage.getItem(key));
+        //let storageList = JSON.parse(localStorage.getItem(key));
         if (!confirm('Вы уверены?')) {
             return;
         }
-      if (storageList && storageList.length) { 
+      if (data && data.length) { 
         let newStorageList = []; 
   
-        for (let i=0; i < storageList.length; i++) { 
-           if (storageList[i].id !== currentItemId) { 
-              newStorageList.push(storageList[i]); 
+        for (let i=0; i < data.length; i++) { 
+           if (data[i].id !== currentItemId) { 
+              newStorageList.push(data[i]); 
            }
         }
         localStorage.setItem(key, JSON.stringify(newStorageList));
@@ -122,11 +122,11 @@ function createTodoList() {
                    {name: 'вырастить', done: true}, 
                    {name: 'посадить', done: false}];
 
-//function getMemory(key) {
-//const data = JSON.parse(localStorage.getItem(key));
-//console.log(data);
-//return data;
-//}
+function getMemory(key) {
+const data = JSON.parse(localStorage.getItem(key));
+console.log(data);
+return data;
+}
 
 function createTodoApp(container, title, key, startList = false) {
 
@@ -137,8 +137,8 @@ function createTodoApp(container, title, key, startList = false) {
     let itemsArray = localStorage.getItem(key) ? JSON.parse(localStorage.getItem(key)) : [];
 
     localStorage.setItem(key, JSON.stringify(itemsArray));
-    const data = JSON.parse(localStorage.getItem(key));
-    //let data = getMemory(key);
+    //const data = JSON.parse(localStorage.getItem(key));
+    let data = getMemory(key);
 
     function createTodoStartList(startList)  {                
 
