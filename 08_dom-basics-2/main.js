@@ -46,11 +46,13 @@ function createTodoItem(name, done, id, key) {
     buttonDone.textContent = 'Готово';
     buttonDelete.classList.add('btn', 'btn-danger');
     buttonDelete.textContent = 'Удалить';
+    //let data = getMemory(key);
     
     
     buttonDone.addEventListener('click', function() {
        item.classList.toggle('list-group-item-success');
        let currentItem = JSON.parse(localStorage.getItem(key));
+     
         if (item.getAttribute('done') === 'false') {
             item.setAttribute('done', 'true');
             for (let i of currentItem) {
@@ -73,22 +75,22 @@ function createTodoItem(name, done, id, key) {
 
     buttonDelete.addEventListener('click', function() {
 
-        let currentItem = JSON.parse(localStorage.getItem(key));
-        if (confirm('Вы уверены?')) {
-        item.remove();
-        for (let i of currentItem) {
-            if (i.id === (item.id)) {
-         currentItem.splice(currentItem.indexOf(i), 1);
-         console.log(currentItem);
-            }
-      for(let i of currentItem) {
-          i.id = String(currentItem.indexOf(i));
-      }
-              localStorage.setItem(key, JSON.stringify(currentItem));  
-         }
-        } 
-    
-    
+        let currentItemId = item.getAttribute('id');
+        let storageList = JSON.parse(localStorage.getItem(key));
+        if (!confirm('Вы уверены?')) {
+            return;
+        }
+      if (storageList && storageList.length) { 
+        let newStorageList = []; 
+  
+        for (let i=0; i < storageList.length; i++) { 
+           if (storageList[i].id !== currentItemId) { 
+              newStorageList.push(storageList[i]); 
+           }
+        }
+        localStorage.setItem(key, JSON.stringify(newStorageList));
+     }   
+     item.remove();
    });
     
 
@@ -120,6 +122,12 @@ function createTodoList() {
                    {name: 'вырастить', done: true}, 
                    {name: 'посадить', done: false}];
 
+//function getMemory(key) {
+//const data = JSON.parse(localStorage.getItem(key));
+//console.log(data);
+//return data;
+//}
+
 function createTodoApp(container, title, key, startList = false) {
 
     let todoAppTitle = createAppTitle(title);
@@ -130,6 +138,7 @@ function createTodoApp(container, title, key, startList = false) {
 
     localStorage.setItem(key, JSON.stringify(itemsArray));
     const data = JSON.parse(localStorage.getItem(key));
+    //let data = getMemory(key);
 
     function createTodoStartList(startList)  {                
 
@@ -193,7 +202,9 @@ function createTodoApp(container, title, key, startList = false) {
          if (todoNewItem.item.getAttribute('done') === 'true') {
             todoNewItem.item.classList.add('list-group-item-success');
         }
-        
+         item.id = String(todoList.children.length);
+         localStorage.setItem(key, JSON.stringify(data));
+
          todoList.append(todoNewItem.item);
         })
         window.createTodoApp = createTodoApp;
