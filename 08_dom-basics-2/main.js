@@ -46,13 +46,15 @@ function createTodoItem(name, done, id, key) {
     buttonDone.textContent = 'Готово';
     buttonDelete.classList.add('btn', 'btn-danger');
     buttonDelete.textContent = 'Удалить';
-    let data = getMemory(key);
+    let data;
     
     
     buttonDone.addEventListener('click', function() {
+
        item.classList.toggle('list-group-item-success');
-       //let currentItem = JSON.parse(localStorage.getItem(key));
-     
+
+       data = getMemory(key);
+
         if (item.getAttribute('done') === 'false') {
             item.setAttribute('done', 'true');
             for (let i of data) {
@@ -76,7 +78,9 @@ function createTodoItem(name, done, id, key) {
     buttonDelete.addEventListener('click', function() {
 
         let currentItemId = item.getAttribute('id');
-        //let storageList = JSON.parse(localStorage.getItem(key));
+
+        data = getMemory(key);
+        
         if (!confirm('Вы уверены?')) {
             return;
         }
@@ -137,7 +141,6 @@ function createTodoApp(container, title, key, startList = false) {
     let itemsArray = localStorage.getItem(key) ? JSON.parse(localStorage.getItem(key)) : [];
 
     localStorage.setItem(key, JSON.stringify(itemsArray));
-    //const data = JSON.parse(localStorage.getItem(key));
     let data = getMemory(key);
 
     function createTodoStartList(startList)  {                
@@ -183,11 +186,9 @@ function createTodoApp(container, title, key, startList = false) {
         object.name = todoItemForm.input.value;
         object.done = todoItem.item.getAttribute('done'); 
         object.id = todoItem.item.getAttribute('id');
-        console.log(object);
 
         itemsArray.push(object);
        
-        console.log(itemsArray);
         localStorage.setItem(key, JSON.stringify(itemsArray));
 
         todoList.append(todoItem.item);
