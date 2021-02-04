@@ -31,7 +31,7 @@
     transform: rotateY(180deg);
   }
   .back-face {
-    background-image: url(/back-face.jpg);
+    background-image: url('back-face.jpg');
     background-repeat: no-repeat;
     background-size: cover;
     background-size:  100% 100%;

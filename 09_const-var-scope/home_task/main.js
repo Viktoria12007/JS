@@ -58,7 +58,7 @@ function createCard(number) {
 }
 
 function createCouplesSection() {
-    let section = document.createElement('section');
+    const section = document.createElement('section');
     section.classList.add('box_for_cards', 'd-flex', 'flex-wrap', 'align-items-center');
     return section;
 }
@@ -68,13 +68,12 @@ function createСouplesApp(container) {
     const couplesTitle = createTitle();
     const couplesForm = createForm();
     const couplesSection = createCouplesSection();
-    const cards = document.querySelectorAll('.card');
-
+    
     container.append(couplesTitle);
     container.append(couplesForm.form);
     container.append(couplesSection);
 
-    couplesForm.input.addEventListener('input', function() {
+    couplesForm.input.addEventListener('input', () => {
         
         if (couplesForm.input.value) {
             couplesForm.button.disabled = false;
@@ -84,11 +83,11 @@ function createСouplesApp(container) {
         }
     
     });
-    couplesForm.form.addEventListener('submit', function(e) {
+    couplesForm.form.addEventListener('submit',  (e) => {
 
         e.preventDefault();
     
-        if (!couplesForm.input.value) {
+        if (couplesForm.input.value === false && localStorage.getItem('couplesKey') === false) {
             return;
         }
     
@@ -99,10 +98,18 @@ function createСouplesApp(container) {
     }
 
     deleteAmountCards();
-        
-        setTimeout(() => {
-            deleteAmountCards();
-        }, 60000);
+    
+    function defaultGame() {
+
+        couplesForm.input.value = localStorage.getItem('couplesKey');
+        couplesForm.button.disabled = false;
+        couplesForm.button.click();
+        couplesForm.button.disabled = true;
+    }
+
+    
+       setTimeout(defaultGame, 60000);
+
 
         function createCouplesGame(amount) {
             for (let i = 1; i <= amount; i++) {
@@ -123,11 +130,15 @@ function createСouplesApp(container) {
           createCouplesGame(4);
     }
 }
-
+    if(couplesForm.input.value) {
        chooseAmountCards(couplesForm.input.value);
+    }
+    if(couplesForm.input.value === false && localStorage.getItem('couplesKey') === true) {
+        chooseAmountCards(JSON.parse(localStorage.getItem('couplesKey')));
+     }
 
     const cards = document.querySelectorAll('.card');
-
+    
     let stopFlip = false;
     let firstCard;
     let secondCard;
@@ -152,6 +163,7 @@ function createСouplesApp(container) {
         firstCard = this;
         return;
       }
+
     if (this.getAttribute('hasFlippedCard') === 'false' && array.length === 1) {
         this.setAttribute('hasFlippedCard', 'true');
         secondObject.name = 'Second card';
@@ -203,12 +215,6 @@ function createСouplesApp(container) {
 
          function shuffle() {
 
-            for (let i = 0; i <= couplesSection.children.length - 1; i++) {
-        
-                (couplesSection.children[i]).style.order = String(i);
-  
-
-          }
             for (let i = cards.length - 1; i > 0; i--) {
              
              let j = Math.floor(Math.random() * (i + 1)); 
@@ -219,29 +225,27 @@ function createСouplesApp(container) {
           }
 
     shuffle();
-      
+    
     function restartGame() {
-    for (let i = 0; i < cards.length; i++) {
-        if (cards[i].getAttribute('hasFlippedCard') === 'true') {
-         let flippedCard = 1;
-         flippedCard += i; 
-         if(flippedCard === cards.length) {
-            if (!confirm('Вы выйграли! Сыграть ещё раз?')) {
-                return;
-            }
-            else {
-                deleteAmountCards();
-                chooseAmountCards(JSON.parse(localStorage.getItem('couplesKey')));
-                shuffle();
-                //couplesForm.input.value = localStorage.getItem('couplesKey');
-                couplesForm.button.click(flipCard());
-            }
-        }
 
-        }
+    const flippedCards = document.querySelectorAll('.flip');
+    console.log(flippedCards.length);
+
+    if(flippedCards.length === cards.length) {
+        if (!confirm('Вы выйграли! Сыграть ещё раз?')) {
+               deleteAmountCards();
+               return;
+           }
+
+            else {
+                defaultGame();
+                clearTimeout(defaultGame);
+                setTimeout(defaultGame, 60000);
+
+            }
+        }    
         
-    } 
-}
+} 
 
     cards.forEach(card => card.addEventListener('click', flipCard));
     
