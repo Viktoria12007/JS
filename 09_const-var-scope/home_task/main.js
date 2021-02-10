@@ -68,6 +68,7 @@ function createСouplesApp(container) {
     const couplesTitle = createTitle();
     const couplesForm = createForm();
     const couplesSection = createCouplesSection();
+    let timerId;
     
     container.append(couplesTitle);
     container.append(couplesForm.form);
@@ -87,7 +88,7 @@ function createСouplesApp(container) {
 
         e.preventDefault();
     
-        if (couplesForm.input.value === false && localStorage.getItem('couplesKey') === false) {
+        if (!couplesForm.input.value && !localStorage.getItem('couplesKey')) {
             return;
         }
     
@@ -106,36 +107,35 @@ function createСouplesApp(container) {
         couplesForm.button.click();
         couplesForm.button.disabled = true;
     }
-
     
-       setTimeout(defaultGame, 60000);
+    clearTimeout(timerId);
+    timerId = setTimeout(defaultGame, 60000);
 
+    function createCouplesGame(amount) {
+        for (let i = 1; i <= amount; i++) {
+            createCard(i);
+            createCard(i);
+            couplesSection.append(createCard(i).card);  
+            couplesSection.append(createCard(i).card);
+        }
+    };
 
-        function createCouplesGame(amount) {
-            for (let i = 1; i <= amount; i++) {
-              createCard(i);
-              createCard(i);
-              couplesSection.append(createCard(i).card);  
-              couplesSection.append(createCard(i).card);
-            }
-          };
-
-        function chooseAmountCards(limit) { 
+    function chooseAmountCards(limit) { 
         if(limit >= 2 && limit <= 10) {
-            localStorage.setItem('couplesKey', limit);
-            createCouplesGame(parseInt(limit));
+        localStorage.setItem('couplesKey', limit);
+        createCouplesGame(parseInt(limit));
+        }
+        else { 
+        localStorage.setItem('couplesKey', 4);
+        createCouplesGame(4);
+        }
     }
-    else { 
-          localStorage.setItem('couplesKey', 4);
-          createCouplesGame(4);
-    }
-}
     if(couplesForm.input.value) {
-       chooseAmountCards(couplesForm.input.value);
+        chooseAmountCards(couplesForm.input.value);
     }
-    if(couplesForm.input.value === false && localStorage.getItem('couplesKey') === true) {
+    if(!couplesForm.input.value && localStorage.getItem('couplesKey')) {
         chooseAmountCards(JSON.parse(localStorage.getItem('couplesKey')));
-     }
+    }
 
     const cards = document.querySelectorAll('.card');
     
@@ -148,13 +148,13 @@ function createСouplesApp(container) {
 
     function flipCard() {
 
-      if (stopFlip) {
+    if (stopFlip) {
       return;
-      }
+    }
 
-      this.classList.add('flip');
+    this.classList.add('flip');
      
-      if (this.getAttribute('hasFlippedCard') === 'false' && array.length === 0) {
+    if (this.getAttribute('hasFlippedCard') === 'false' && !array.length) {
         this.setAttribute('hasFlippedCard', 'true');
         firstObject.name = 'First card';
         firstObject.dataNumber = this.dataset.number;
@@ -162,9 +162,9 @@ function createСouplesApp(container) {
         array.push(firstObject);
         firstCard = this;
         return;
-      }
+    }
 
-    if (this.getAttribute('hasFlippedCard') === 'false' && array.length === 1) {
+    if (this.getAttribute('hasFlippedCard') === 'false' && array.length) {
         this.setAttribute('hasFlippedCard', 'true');
         secondObject.name = 'Second card';
         secondObject.dataNumber = this.dataset.number;
@@ -179,73 +179,67 @@ function createСouplesApp(container) {
     
       }
       
- }
- function checkForMatch() {
+    }
+    
+    function checkForMatch() {
+       const isMatch = firstObject.dataNumber === secondObject.dataNumber;
+       isMatch ? disableCards() : unflipCards();
+    }
 
-   const isMatch = firstObject.dataNumber === secondObject.dataNumber;
-   isMatch ? disableCards() : unflipCards();
-
- }
-
-   function disableCards() {
-
+    function disableCards() {
        firstCard.removeEventListener('click', flipCard);
        secondCard.removeEventListener('click', flipCard);
        resetCards();
-
-   }
+    }
     
-   function unflipCards() {
+    function unflipCards() {
 
        setTimeout(() => {
         firstCard.setAttribute('hasFlippedCard', 'false');
         secondCard.setAttribute('hasFlippedCard', 'false');
-         firstCard.classList.remove('flip');
-         secondCard.classList.remove('flip');
-         resetCards();
+        firstCard.classList.remove('flip');
+        secondCard.classList.remove('flip');
+        resetCards();
        }, 1500);
     
-     }
+    }
 
-     function resetCards() {
-        array.splice(0);
-        stopFlip = false;
-        [firstCard, secondCard] = [null, null];
-      }
+    function resetCards() {
+       array.splice(0);
+       stopFlip = false;
+       [firstCard, secondCard] = [null, null];
+    }
 
-         function shuffle() {
-
-            for (let i = cards.length - 1; i > 0; i--) {
-             
-             let j = Math.floor(Math.random() * (i + 1)); 
-             cards[i].style.order = String(j);
-             cards[j].style.order = String(i);
-              
-            }
-          }
+    function shuffle() {
+       for (let i = cards.length - 1; i > 0; i--) {
+         let j = Math.floor(Math.random() * (i + 1)); 
+         cards[i].style.order = String(j);
+         cards[j].style.order = String(i);
+       }
+    }
 
     shuffle();
     
     function restartGame() {
 
-    const flippedCards = document.querySelectorAll('.flip');
-    console.log(flippedCards.length);
+       const flippedCards = document.querySelectorAll('.flip');
+       console.log(flippedCards.length);
 
-    if(flippedCards.length === cards.length) {
-        if (!confirm('Вы выйграли! Сыграть ещё раз?')) {
-               deleteAmountCards();
-               return;
-           }
+        if(flippedCards.length === cards.length) {
+            if (!confirm('Вы выйграли! Сыграть ещё раз?')) {
+                   deleteAmountCards();
+                   return;
+               }
 
             else {
                 defaultGame();
-                clearTimeout(defaultGame);
-                setTimeout(defaultGame, 60000);
+                clearTimeout(timerId);
+                timerId = setTimeout(defaultGame, 60000);
 
             }
         }    
         
-} 
+    } 
 
     cards.forEach(card => card.addEventListener('click', flipCard));
     
@@ -255,6 +249,6 @@ function createСouplesApp(container) {
 
     });
 
-        window.createСouplesApp = createСouplesApp;
+    window.createСouplesApp = createСouplesApp;
 
-    }
+}
