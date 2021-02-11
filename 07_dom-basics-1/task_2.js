@@ -6,7 +6,7 @@ enterInfo.type = 'text';
 let showInfo = document.createElement('h2');
 showInfo.textContent = '';
 
-let counter;
+let timerId;
 
 
 document.body.append(enterInfo);
@@ -16,9 +16,9 @@ function getStartPoint() {
   showInfo.textContent = enterInfo.value;
 }
 function createTimeOut() {
-    clearTimeout(getStartPoint);
+    clearTimeout(timerId);
 
-    setTimeout(getStartPoint, 3000);
+    timerId = setTimeout(getStartPoint, 3000);
 }
 
 enterInfo.addEventListener('input', createTimeOut);
