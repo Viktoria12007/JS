@@ -60,38 +60,43 @@ function createFormForAdd() {
 
 function createFormForFilter() {
     const form = document.createElement('form');
-    form.classList.add('col-lg-5','d-flex', 'flex-wrap', 'align-items-center', 'mb-5');
+    form.classList.add('col-lg-5','d-flex', 'flex-wrap', 'align-items-center', 'justify-content-between', 'mb-5');
     let input;
     
     const placeholdersArray = ['Фамилия Имя Отчество', 'Факультет', 'Год начала обучения', 'Год окончания обучения'];
     const typesArray = ['text', 'text', 'number', 'number'];
     const namesArray = ['full name', 'faculty', 'year of the start of learning', 'year of the finish of learning'];
-    const pattern = ['^[А-ЯЁ][а-яё]{1,29}', '^[А-ЯЁ][а-яё]{1,29}', '', ''];
+    const pattern = ['([А-ЯЁ][а-яё]{1,29})|([А-ЯЁ][а-яё]{1,29} [А-ЯЁ][а-яё]{1,29})|([А-ЯЁ][а-яё]{1,29} [А-ЯЁ][а-яё]{1,29} [А-ЯЁ][а-яё]{1,29})', '^[А-ЯЁ][а-яё]{1,29}', '', ''];
     const minsArray = ['', '', 2000, 2004];
     const maxsArray = ['', '', today.getFullYear(), (today.getFullYear() + 4)];
 
     for (let i = 0; i <= 3; i++) {
-    input = document.createElement('input');
-    input.classList.add('form-control', 'mb-4');
+    input = document.createElement('input');           
+    input.classList.add('form-control', 'mb-4');        
     input.placeholder = placeholdersArray[i];
     input.setAttribute('type', typesArray[i]);
     input.setAttribute('name', namesArray[i]);
-    input.setAttribute('pattern', pattern[i]);
+    input.setAttribute('pattern', pattern[i]);        
     input.setAttribute('min', minsArray[i]);
     input.setAttribute('max', maxsArray[i]);
     form.append(input);
     }
     
-    const button = document.createElement('button');
-    button.classList.add('btn', 'btn-success');
-    button.textContent = 'Добавить фильтр';
-    button.setAttribute('type', 'submit');
+    const buttonAdd = document.createElement('button');
+    buttonAdd.classList.add('btn', 'btn-success');
+    buttonAdd.textContent = 'Применить фильтр';
+    buttonAdd.setAttribute('type', 'submit');
+    const buttonDelete = document.createElement('button');
+    buttonDelete.classList.add('btn', 'btn-success');
+    buttonDelete.textContent = 'Отменить фильтр';
     
-    form.append(button);
+    form.append(buttonAdd);
+    form.append(buttonDelete)
 
     return {
         form,
-        button
+        buttonAdd,
+        buttonDelete
     }
 }
 
@@ -233,8 +238,6 @@ startArray = [
   yearStartLearning: 2019, 
   faculty: 'Программирование'}
 ];
-
-let filterArray = [];
 
 function createСontrolPanelApp(container) {
      
@@ -426,63 +429,71 @@ CustomValidation.prototype = {
         
         e.preventDefault();
 
-        filterArray = [];
-
-        for (let i=0; i <= formForFilter.form.length-1; i++) {
-          if (formForFilter.form[i].value !== '') {
-                
-             for (let object of currentArray) {
+        const filtersArrayTotal = [];
         
-               for (let key in object) {
-                 
+        const filterArray1 = [];
+        const filterArray2 = [];
+        const filterArray3 = [];
+        const filterArray4 = [];
+
+        for (let object of currentArray) {
+        for (let i=0; i <= formForFilter.form.length-2; i++) {
+          if (formForFilter.form[i].value !== '') {
                  switch (i) {
                   case 0:
-                    if (String(object[key]).includes(formForFilter.form[i].value)) {
-                      filterArray.push(object);
+                    const fullName = object.surname + ' ' + object.name + ' ' + object.middleName;
+                    if (fullName.includes(formForFilter.form[i].value)) {
+                      filterArray1.push(object);
                     };
                     break;
                   case 1:
-                    if (String(object[key]).includes(formForFilter.form[i].value)) {
-                      filterArray.push(object);
+                    if (String(object.faculty).includes(formForFilter.form[i].value)) {
+                      filterArray2.push(object);
                     };
                     break;
                   case 2:
-                    if (String(object[key]) === formForFilter.form[i].value) {
-                      filterArray.push(object);
+                    if (String(object.yearStartLearning) === formForFilter.form[i].value) {
+                      filterArray3.push(object);
                     };
                     break;
                   case 3:
-                    let yearEndLearning = object[key] + 4;
+                    let yearEndLearning = object.yearStartLearning + 4;
                     if (yearEndLearning === Number(formForFilter.form[i].value)) {
-                      filterArray.push(object);
+                      filterArray4.push(object);
                     };
                     break;
-                  }   
-               }
+                  }       
              }
           }
         }
       
-        basicTable.tableBody.innerHTML = '';
+        filtersArrayTotal.push(filterArray1, filterArray2, filterArray3, filterArray4);
+
+        const notEmptyFiltersArray = filtersArrayTotal.filter((item) => {
+          return item.length !== 0;
+        })
+
+        const lastFilterArray = notEmptyFiltersArray[notEmptyFiltersArray.length-1];
         
-        const uniqueArray = filterArray.filter((item, index) => {
+        const uniqueArray = lastFilterArray.filter((item, index) => {
       
-          return index === filterArray.findIndex(obj => {
+          return index === lastFilterArray.findIndex(obj => {
            
             return JSON.stringify(obj) === JSON.stringify(item);
           });
         });
 
+        basicTable.tableBody.innerHTML = '';
         createTable(uniqueArray);
 
-        for(let i=0; i <= formForFilter.form.length-1; i++) {
+        for(let i=0; i <= formForFilter.form.length-2; i++) {
           formForFilter.form[i].value = ''; 
           }
-        
+          
     });
 
 
-    formForFilter.button.addEventListener('click',  (e) => {
+    formForFilter.buttonAdd.addEventListener('click',  (e) => {
       
         function CustomValidation() { }
 
@@ -498,7 +509,7 @@ CustomValidation.prototype = {
     const min = input.getAttribute('min');
 
     if (validity.patternMismatch) {
-      this.addInvalidity('Для ввода доступны только буквы русского алфавита, без пробелов и других символов! Первая буква заглавная, остальные в нижнем регистре. Пожалуйста, введите от 2-х до 30-ти букв.');
+      this.addInvalidity('Используйте буквы только русского алфавита! Пожалуйста, введите от 1-ого до 3-х слов. Первая буква каждого слова заглавная, остальные в нижнем регистре. Каждое слово в конце должно отделяться пробелом и содержать от 2-х до 30-ти букв.');
     }
 
     if (validity.rangeOverflow) {
@@ -525,7 +536,7 @@ function validation() {
   }
 }
         
-        for (let i = 0; i < formForFilter.form.length-1; i++) {
+        for (let i = 0; i < formForFilter.form.length-2; i++) {
           
             let input = formForFilter.form[i];
 
@@ -544,4 +555,9 @@ function validation() {
           } 
     });
 
+    formForFilter.buttonDelete.addEventListener('click',  (e) => {
+      e.preventDefault();
+      basicTable.tableBody.innerHTML = '';
+      createTable(currentArray);
+    });
 }
