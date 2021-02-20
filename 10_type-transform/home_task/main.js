@@ -474,7 +474,8 @@ CustomValidation.prototype = {
         })
 
         const lastFilterArray = notEmptyFiltersArray[notEmptyFiltersArray.length-1];
-        
+
+        if (lastFilterArray !== undefined) {
         const uniqueArray = lastFilterArray.filter((item, index) => {
       
           return index === lastFilterArray.findIndex(obj => {
@@ -485,10 +486,14 @@ CustomValidation.prototype = {
 
         basicTable.tableBody.innerHTML = '';
         createTable(uniqueArray);
+      }
+      else {
+        basicTable.tableBody.innerHTML = 'Ничего не найдено!';
+      }
 
-        for(let i=0; i <= formForFilter.form.length-2; i++) {
+        for (let i=0; i <= formForFilter.form.length-2; i++) {
           formForFilter.form[i].value = ''; 
-          }
+        }
           
     });
 
