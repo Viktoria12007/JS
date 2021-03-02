@@ -69,7 +69,8 @@ function createBlogPagination(array) {
 }
 
 function createPost(array) {
-    const titlePost = document.createElement('h1');
+     const titlePost = document.createElement('h1');
+     titlePost.classList.add('mt-3');
      titlePost.textContent = array.data.title;
      const textPost = document.createElement('p');
      textPost.textContent = array.data.body;
@@ -113,7 +114,7 @@ async function createBlogApp(container) {
     let pageNumber = pageParams.get('page');
     
 
-    const response = await fetch('https://gorest.co.in/public-api/posts');
+    const response = await fetch('https://gorest.co.in/public-api/posts?page=' + pageNumber);
     const data = await response.json(); 
      
     const blogTitleElement = createBlogTitle();
@@ -167,7 +168,6 @@ async function createPostApp(container) {
 
      const responseComments = await fetch('https://gorest.co.in/public-api/comments?post_id=' + pageId);
      const dataComments = await responseComments.json(); 
-     console.log(dataComments);
 
      const commentsListElement = createCommentsList(dataComments);
      container.append(commentsListElement);
